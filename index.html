@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SrTortilla - Urban Art Gallery</title>
+  <link rel="stylesheet" href="https://cdn.snipcart.com/themes/v3.3.0/default/snipcart.css" />
+  <script async src="https://cdn.snipcart.com/themes/v3.3.0/default/snipcart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #111;
+      color: #fff;
+    }
+    header {
+      background-color: #1a1a1a;
+      padding: 20px;
+      text-align: center;
+      font-size: 2rem;
+      letter-spacing: 2px;
+      border-bottom: 2px solid #444;
+      position: relative;
+    }
+    .cart-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #ff3c38;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .cart-button:hover {
+      background: #e52b27;
+    }
+    #search-bar {
+      text-align: center;
+      padding: 20px;
+    }
+    #search-input {
+      padding: 10px;
+      width: 60%;
+      border-radius: 5px;
+      border: none;
+      font-size: 1rem;
+    }
+	.gallery {
+	  display: grid;
+	  grid-template-columns: repeat(3, 1fr); /* 2 columns by default */
+	  gap: 16px;
+	  padding: 10px;
+	}
+
+	@media (max-width: 600px) {
+	  .gallery {
+		grid-template-columns: 1fr; /* Switch to 1 column on phones */
+	  }
+	}
+
+	/* Force 2 columns layout on smaller screens */
+	@media (max-width: 600px) {
+	  .gallery {
+		grid-template-columns: repeat(2, 1fr);
+	  }
+	}
+	.item {
+	  display: flex;
+	  flex-direction: column;
+	  align-items: center;
+	  background: #222;
+	  padding: 15px;
+	  border-radius: 10px;
+	  box-shadow: 0 0 10px #333;
+	  position: relative;
+	  overflow: visible;  /* Make sure the content isn't hidden */
+	}
+    .item img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+	/* Ensure button is well-placed and visible under each item */
+	.item .snipcart-add-item {
+	  display: inline-block;
+	  margin-top: 10px;
+	  padding: 12px 20px;
+	  background-color: #ff3c38;
+	  color: white;
+	  border: none;
+	  border-radius: 5px;
+	  cursor: pointer;
+	  font-weight: bold;
+	  text-align: center;
+	  z-index: 10; /* Ensure the button is above other content */
+	}
+
+	.item .snipcart-add-item:hover {
+	  background-color: #e52b27;
+	}
+    .pagination {
+      text-align: center;
+      padding-bottom: 30px;
+    }
+    .pagination button {
+      background-color: #333;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      margin: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .pagination button.active {
+      background-color: #ff3c38;
+    }
+    .category-button {
+      margin: 5px;
+      padding: 8px 12px;
+      border-radius: 5px;
+      border: none;
+      background-color: #333;
+      color: white;
+      cursor: pointer;
+    }
+    .category-button.active-category {
+      background-color: #ff3c38;
+    }
+	/* Modal Container */
+	#modal {
+	  display: none; /* Initially hidden */
+	  position: fixed; /* Fixed position to stay in place while scrolling */
+	  top: 0;
+	  left: 0;
+	  width: 100vw; /* Full width of the viewport */
+	  height: 100vh; /* Full height of the viewport */
+	  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
+	  z-index: 1000; /* Ensure the modal is on top of all other content */
+	  justify-content: center;
+	  align-items: center;
+	  flex-direction: column;
+	  overflow: hidden; /* Prevent scrolling while modal is open */
+	  padding: 20px;
+	  box-sizing: border-box;
+	}
+
+	/* Modal Content */
+	#modal .modal-content {
+	  position: relative;
+	  max-width: 90%; /* Limit the width */
+	  max-height: 80%; /* Limit the height */
+	  background-color: black;
+	  padding: 20px;
+	  border-radius: 10px;
+	  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+	  overflow-y: auto; /* Allow scrolling if the content is too tall */
+	  text-align: center;
+	   display: flex;
+	  flex-direction: column;
+	  align-items: center;
+	}
+
+	/* Modal Image */
+	#modal-img {
+	  max-width: 90vw;
+	  max-height: 70vh;
+	  width: auto;
+	  height: auto;
+	  object-fit: contain;
+	  border-radius: 10px;
+	  display: block;
+	  margin: 0 auto;
+	}
+
+	/* Modal Description */
+	#modal-description {
+	  color: #000;
+	  margin-bottom: 20px;
+	  font-size: 1.2rem;
+	}
+
+	/* Close Button */
+	#modal-close {
+	  position: absolute;
+	  top: 10px;
+	  right: 10px;
+	  font-size: 30px;
+	  color: white;
+	  background-color: transparent;
+	  border: none;
+	  cursor: pointer;
+	  z-index: 1010; /* Ensure the close button is above other elements */
+	}
+
+	/* Modal Navigation (Previous / Next) */
+	.modal-nav {
+	  display: flex;
+	  justify-content: space-between;
+	  width: 100%;
+	}
+
+	#prev-slide, #next-slide {
+	  background-color: #ff3c38;
+	  color: white;
+	  padding: 10px 20px;
+	  border: none;
+	  border-radius: 5px;
+	  cursor: pointer;
+	  font-weight: bold;
+	  z-index: 100;
+	}
+
+	#prev-slide:hover, #next-slide:hover {
+	  background-color: #e52b27;
+	}
+	/* Modal button to match the product "Add to Cart" button */
+
+	.modal-content .snipcart-add-item {
+	  margin: 20px auto;
+	  display: block;
+	  background-color: #ff3c38;
+	  color: white;
+	  padding: 10px 20px;
+	  border: none;
+	  border-radius: 5px;
+	  cursor: pointer;
+	  font-weight: bold;
+	  z-index: 100;
+	}
+
+	#modal-buy:hover {
+	  background: #e52b27;
+	}
+
+  </style>
+</head>
+<body>
+<header>
+  SrTortilla
+  <div>
+  <button class="snipcart-checkout cart-button">
+    View Cart <span class="snipcart-items-count"></span>
+  </button>
+  </div>
+</header>
+
+<!-- Category Filter -->
+<div id="categories-bar" style="text-align:center; padding: 15px;">
+  <span id="category-buttons">
+    <button class="category-button" onclick="handleCategoryClick('Art', this)">Art</button>
+    <button class="category-button" onclick="handleCategoryClick('Sculptures', this)">Sculptures</button>
+    <button class="category-button" onclick="handleCategoryClick('Paintings', this)">Paintings</button>
+  </span>
+</div>
+
+<!-- Search Bar -->
+<div id="search-bar">
+  <input type="text" id="search-input" placeholder="Search for artwork by name..." oninput="filterProducts(activeCategory)">
+</div>
+
+ <!-- Gallery -->
+<section class="gallery" id="gallery">
+  <!-- NEED TO ADD ITEMS HERE FOR SNIPCART TO FIND THEM!!! -->
+
+  <!-- Static Product Items -->
+<div class="gallery">
+  <div class="item">
+    <img src="SHrekMusical.jpg" alt="Product 1">
+    <span class="item_name">Product 1</span>
+    <span class="item_price">$19.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="1"
+      data-item-price="19.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 1">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="SHrekMusical.jpg" alt="Product 2">
+    <span class="item_name">Product 2</span>
+    <span class="item_price">$29.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="2"
+      data-item-price="29.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 2">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="DrivinManiaSplashScreen.png" alt="Product 3">
+    <span class="item_name">Product 3</span>
+    <span class="item_price">$39.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="3"
+      data-item-price="39.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 3">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="DrivinManiaSplashScreen.png" alt="Product 3">
+    <span class="item_name">Product 3</span>
+    <span class="item_price">$39.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="4"
+      data-item-price="39.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 3">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="DrivinManiaSplashScreen.png" alt="Product 4">
+    <span class="item_name">Product 4</span>
+    <span class="item_price">$39.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="5"
+      data-item-price="39.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 4">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="DrivinManiaSplashScreen.png" alt="Product 5">
+    <span class="item_name">Product 5</span>
+    <span class="item_price">$39.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="6"
+      data-item-price="39.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 5">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="DrivinManiaSplashScreen.png" alt="Product 6">
+    <span class="item_name">Product 6</span>
+    <span class="item_price">$39.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="7"
+      data-item-price="39.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 6">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="DrivinManiaSplashScreen.png" alt="Product 7">
+    <span class="item_name">Product 7</span>
+    <span class="item_price">$39.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="8"
+      data-item-price="39.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 7">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="DrivinManiaSplashScreen.png" alt="Product 8">
+    <span class="item_name">Product 8</span>
+    <span class="item_price">$39.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="9"
+      data-item-price="39.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 8">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="DrivinManiaSplashScreen.png" alt="Product 9">
+    <span class="item_name">Product 9</span>
+    <span class="item_price">$39.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="10"
+      data-item-price="39.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 9">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="DrivinManiaSplashScreen.png" alt="Product 10">
+    <span class="item_name">Product 10</span>
+    <span class="item_price">$39.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="11"
+      data-item-price="39.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 10">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="DrivinManiaSplashScreen.png" alt="Product 11">
+    <span class="item_name">Product 11</span>
+    <span class="item_price">$39.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="12"
+      data-item-price="39.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 11">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="DrivinManiaSplashScreen.png" alt="Product 12">
+    <span class="item_name">Product 12</span>
+    <span class="item_price">$39.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="13"
+      data-item-price="39.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 12">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="SHrekMusical.jpg" alt="Product 13">
+    <span class="item_name">Product 13</span>
+    <span class="item_price">$29.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="14"
+      data-item-price="29.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 13">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="SHrekMusical.jpg" alt="Product 14">
+    <span class="item_name">Product 14</span>
+    <span class="item_price">$29.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="15"
+      data-item-price="29.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 14">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="SHrekMusical.jpg" alt="Product 15">
+    <span class="item_name">Product 15</span>
+    <span class="item_price">$29.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="16"
+      data-item-price="29.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 15">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="SHrekMusical.jpg" alt="Product 16">
+    <span class="item_name">Product 16</span>
+    <span class="item_price">$29.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="17"
+      data-item-price="29.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 16">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="SHrekMusical.jpg" alt="Product 17">
+    <span class="item_name">Product 17</span>
+    <span class="item_price">$29.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="18"
+      data-item-price="29.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 17">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="SHrekMusical.jpg" alt="Product 18">
+    <span class="item_name">Product 18</span>
+    <span class="item_price">$29.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="19"
+      data-item-price="29.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 18">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="SHrekMusical.jpg" alt="Product 19">
+    <span class="item_name">Product 19</span>
+    <span class="item_price">$29.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="20"
+      data-item-price="29.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 19">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="SHrekMusical.jpg" alt="Product 20">
+    <span class="item_name">Product 20</span>
+    <span class="item_price">$29.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="21"
+      data-item-price="29.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 20">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="SHrekMusical.jpg" alt="Product 21">
+    <span class="item_name">Product 21</span>
+    <span class="item_price">$29.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="22"
+      data-item-price="29.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 21">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="SHrekMusical.jpg" alt="Product 22">
+    <span class="item_name">Product 22</span>
+    <span class="item_price">$29.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="23"
+      data-item-price="29.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 22">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="SHrekMusical.jpg" alt="Product 23">
+    <span class="item_name">Product 23</span>
+    <span class="item_price">$29.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="24"
+      data-item-price="29.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 23">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="SHrekMusical.jpg" alt="Product 24">
+    <span class="item_name">Product 24</span>
+    <span class="item_price">$29.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="25"
+      data-item-price="29.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="A surreal, humorous reinterpretation of Broadway in gouache."
+      data-item-name="Product 24">
+      Add to Cart
+    </button>
+  </div>
+  <div class="item">
+    <img src="SHrekMusical.jpg" alt="Product 25">
+    <span class="item_name">Product 25</span>
+    <span class="item_price">$29.99</span>
+    <button class="snipcart-add-item"
+      data-item-id="26"
+      data-item-price="29.99"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="undefined"
+      data-item-name="Product 25">
+      Add to Cart
+    </button>
+  </div>
+
+  <!-- More products as needed -->
+</section>
+
+
+<!-- Modal for Slideshow -->
+<div class="modal" id="modal" style="display:none;">
+  <div class="modal-content">
+    <!-- This is the image that will change when navigating through the modal -->
+    <img id="modal-img" src="" alt="Product Image" style="max-width:90vw; max-height:80vh; border-radius:10px;">
+    
+    <!-- Product description text -->
+    <span id="modal-description" style="color:white; text-align:center; margin:10px;"></span>
+	
+	<!-- Index like "Artwork 3 of 12" -->
+    <span id="modal-index" style="color:white; text-align:center; display:block; margin-top:5px;"></span>
+
+    <!-- Close button -->
+    <button id="modal-close" onclick="closeModal()">Close</button>
+    
+    <!-- Add to Cart button -->
+    <button id="modal-buy" class="snipcart-add-item" style="margin-top:10px;">
+      Add to Cart
+    </button>
+    
+    <!-- Navigation buttons -->
+    <div class="modal-nav">
+      <button id="prev-slide" onclick="prevSlide()">Previous</button>
+      <button id="next-slide" onclick="nextSlide()">Next</button>
+    </div>
+  </div>
+</div>
+
+<!-- Pagination -->
+<div class="pagination" id="pagination">
+  <button onclick="goToPage(1)">1</button>
+  <button onclick="goToPage(2)">2</button>
+  <!-- More pagination buttons if necessary -->
+</div>
+
+<div hidden id="snipcart"
+  data-api-key="MzYxZGNmYWItNzQxMi00NmYyLWJmMTEtOGFmOGI4M2E2YWY0NjM4ODU4Mjk4OTA5OTQ5ODMy"
+</div>
+
+<script>
+ // Static Product Filtering by Category ###MATCH THIS ELEMENTS WITH THE HTML CODE USING THE GENERATEPRODUCTHTML.html###
+  let allProducts = [
+    { id: 1, category: 'Art', name: 'Product 1', price: 19.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.'  },
+    { id: 2, category: 'Sculptures', name: 'Product 2', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 3, category: 'Paintings', name: 'Product 3', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 5, category: 'Paintings', name: 'Product 4', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 6, category: 'Paintings', name: 'Product 5', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 7, category: 'Paintings', name: 'Product 6', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 8, category: 'Paintings', name: 'Product 7', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 9, category: 'Paintings', name: 'Product 8', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 10, category: 'Paintings', name: 'Product 9', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 11, category: 'Paintings', name: 'Product 10', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 12, category: 'Paintings', name: 'Product 11', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 13, category: 'Paintings', name: 'Product 12', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+	{ id: 14, category: 'Sculptures', name: 'Product 13', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 15, category: 'Sculptures', name: 'Product 14', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 16, category: 'Sculptures', name: 'Product 15', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 17, category: 'Sculptures', name: 'Product 16', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 18, category: 'Sculptures', name: 'Product 17', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 19, category: 'Sculptures', name: 'Product 18', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 20, category: 'Sculptures', name: 'Product 19', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 21, category: 'Sculptures', name: 'Product 20', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 22, category: 'Sculptures', name: 'Product 21', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 23, category: 'Sculptures', name: 'Product 22', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 24, category: 'Sculptures', name: 'Product 23', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 25, category: 'Sculptures', name: 'Product 24', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 26, category: 'Sculptures', name: 'Product 25', price: 29.99, image: 'SHrekMusical.jpg',  },
+
+    // Add more products as needed
+  ];
+
+  let currentPage = 1;
+  const itemsPerPage = 12;
+  let activeCategory = '';  // No active category initially
+  let filteredProducts = [...allProducts]; // Start with all products
+  let currentIndex = 0; // Track the current product index for the modal
+
+// Render page with products
+function renderPage() {
+  const gallery = document.getElementById('gallery');
+  gallery.innerHTML = '';  // Clear the existing gallery
+
+  const start = (currentPage - 1) * itemsPerPage;
+  const paginatedProducts = filteredProducts.slice(start, start + itemsPerPage);
+
+  // Create product items for the gallery
+  paginatedProducts.forEach((product, index) => {
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = `
+      <img src="${product.image}" alt="${product.name}" onclick="openModal(${start + index})">
+      <span class="item_name">${product.name}</span>
+      <span class="item_price">$${product.price}</span>
+      <button class="snipcart-add-item"
+        data-item-id="${product.id}"
+        data-item-price="${product.price}"
+		data-item-url="https://waltket.github.io/SrTortillaStore/"
+        data-item-description="${product.description}"
+        data-item-name="${product.name}">
+        Add to Cart
+      </button>
+    `;
+    gallery.appendChild(div);
+  });
+
+  // Update the pagination buttons based on the filtered products
+  renderPagination();
+  
+}
+
+// Render the pagination buttons dynamically
+function renderPagination() {
+  const pagination = document.getElementById('pagination');
+  pagination.innerHTML = '';  // Clear existing pagination
+
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);  // Total pages based on the number of products
+
+  // Prevent rendering pagination if no products exist
+  if (totalPages === 0) {
+    pagination.innerHTML = 'No products available';
+    return;
+  }
+
+  // Create page buttons dynamically
+  for (let i = 1; i <= totalPages; i++) {
+    const button = document.createElement('button');
+    button.textContent = i;
+    button.onclick = () => goToPage(i);  // Bind click event to each page
+    if (i === currentPage) {
+      button.classList.add('active');  // Highlight the active page
+    }
+    pagination.appendChild(button);
+  }
+}
+// Go to the specified page
+function goToPage(page) {
+  if (page < 1 || page > Math.ceil(filteredProducts.length / itemsPerPage)) {
+    return;  // Prevent going out of bounds
+  }
+  currentPage = page;
+  renderPage();  // Re-render the gallery with the new page
+}
+
+function openModal(index) {
+  currentIndex = index;
+
+  const product = filteredProducts[currentIndex];
+
+  document.getElementById('modal-img').src = product.image;
+  document.getElementById('modal-description').textContent = product.description;
+
+  const modalBuyButton = document.getElementById('modal-buy');
+  modalBuyButton.setAttribute('data-item-id', product.id);
+  modalBuyButton.setAttribute('data-item-price', product.price);
+  modalBuyButton.setAttribute('data-item-url', product.url);
+  modalBuyButton.setAttribute('data-item-description', product.description);
+  modalBuyButton.setAttribute('data-item-name', product.name);
+
+  document.getElementById('modal').style.display = 'flex';
+  updateModalContent() 
+}
+
+  function closeModal() {
+    document.getElementById('modal').style.display = 'none'; // Hide the modal
+  }
+  
+function updateModalContent() {
+  const product = filteredProducts[currentIndex];
+
+  // Update image and description
+  document.getElementById('modal-img').src = product.image;
+  document.getElementById('modal-description').textContent = product.description || 'No description';
+
+  // Update index display
+  document.getElementById('modal-index').textContent =
+    `Artwork ${currentIndex + 1} of ${filteredProducts.length}`;
+
+  // Update buy button
+  const buyBtn = document.getElementById('modal-buy');
+  buyBtn.setAttribute('data-item-id', product.id);
+  buyBtn.setAttribute('data-item-name', product.name);
+  buyBtn.setAttribute('data-item-price', product.price);
+  buyBtn.setAttribute('data-item-url', product.url);
+  buyBtn.setAttribute('data-item-description', product.description);
+}
+
+function prevSlide() {
+  if (filteredProducts.length === 0) return;
+  currentIndex = (currentIndex - 1 + filteredProducts.length) % filteredProducts.length;
+  updateModalContent();
+}
+
+function nextSlide() {
+  if (filteredProducts.length === 0) return;
+  currentIndex = (currentIndex + 1) % filteredProducts.length;
+  updateModalContent();
+}
+
+  document.getElementById('modal-buy').addEventListener('click', function(e) {
+    const productId = e.target.getAttribute('data-item-id');
+    const productName = e.target.getAttribute('data-item-name');
+    const productPrice = parseFloat(e.target.getAttribute('data-item-price'));
+    const productUrl = e.target.getAttribute('data-item-url');
+    const productDescription = e.target.getAttribute('data-item-description');
+
+    Snipcart.api.cart.items.add({
+      id: productId,
+      name: productName,
+      price: productPrice,
+      url: productUrl,
+      description: productDescription
+    });
+	  closeModal();
+  });
+
+// Filter products by category and search term
+function filterProducts(category = '', button = null) {
+  const searchTerm = document.getElementById('search-input').value.toLowerCase();
+
+  // If category is not selected, reset to show all products
+  if (category === '') {
+    activeCategory = '';
+  } else {
+    activeCategory = category;
+  }
+
+  // Apply search term and category filter
+  filteredProducts = allProducts.filter(product => 
+    product.name.toLowerCase().includes(searchTerm) && 
+    (activeCategory === '' || product.category === activeCategory)
+  );
+
+  // After filtering products, reset the current page to the first page
+  currentPage = 1;
+
+  renderPage();  // Re-render the page with filtered products
+}
+
+  function handleCategoryClick(category, button) {
+    if (activeCategory === category) {
+      activeCategory = '';
+      button.classList.remove('active-category');
+    } else {
+      activeCategory = category;
+      const buttons = document.querySelectorAll('.category-button');
+      buttons.forEach(btn => btn.classList.remove('active-category'));
+      button.classList.add('active-category');
+    }
+    filterProducts(activeCategory, button);
+  }
+
+  renderPage();  // Initial page render
+</script>
+</body>
+</html>

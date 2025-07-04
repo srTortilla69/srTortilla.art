@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Generate Product HTML</title>
+</head>
+<body>
+<script>
+// This script generates standalone HTML for a product list and downloads it as a file
+
+const products = [
+    { id: 1, category: 'Art', name: 'Product 1', price: 19.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.'  },
+    { id: 2, category: 'Sculptures', name: 'Product 2', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 3, category: 'Paintings', name: 'Product 3', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 4, category: 'Paintings', name: 'Product 3', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 5, category: 'Paintings', name: 'Product 4', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 6, category: 'Paintings', name: 'Product 5', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 7, category: 'Paintings', name: 'Product 6', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 8, category: 'Paintings', name: 'Product 7', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 9, category: 'Paintings', name: 'Product 8', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 10, category: 'Paintings', name: 'Product 9', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 11, category: 'Paintings', name: 'Product 10', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 12, category: 'Paintings', name: 'Product 11', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 13, category: 'Paintings', name: 'Product 12', price: 39.99, image: 'DrivinManiaSplashScreen.png', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+	{ id: 14, category: 'Sculptures', name: 'Product 13', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 15, category: 'Sculptures', name: 'Product 14', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 16, category: 'Sculptures', name: 'Product 15', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 17, category: 'Sculptures', name: 'Product 16', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 18, category: 'Sculptures', name: 'Product 17', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 19, category: 'Sculptures', name: 'Product 18', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 20, category: 'Sculptures', name: 'Product 19', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 21, category: 'Sculptures', name: 'Product 20', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 22, category: 'Sculptures', name: 'Product 21', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 23, category: 'Sculptures', name: 'Product 22', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 24, category: 'Sculptures', name: 'Product 23', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 25, category: 'Sculptures', name: 'Product 24', price: 29.99, image: 'SHrekMusical.jpg', description: 'A surreal, humorous reinterpretation of Broadway in gouache.' },
+    { id: 26, category: 'Sculptures', name: 'Product 25', price: 29.99, image: 'SHrekMusical.jpg',  },
+];
+
+function generateStaticHTML() {
+  let html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Static Product Gallery</title>
+</head>
+<body>
+<div class="gallery">
+`;
+
+  products.forEach(product => {
+    html += `  <div class="item">
+    <img src="${product.image}" alt="${product.name}">
+    <span class="item_name">${product.name}</span>
+    <span class="item_price">$${product.price}</span>
+    <button class="snipcart-add-item"
+      data-item-id="${product.id}"
+      data-item-price="${product.price}"
+	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+      data-item-description="${product.description}"
+      data-item-name="${product.name}">
+      Add to Cart
+    </button>
+  </div>
+`;
+  });
+
+  html += `</div>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'HTMLproducts.txt';
+  link.click();
+}
+
+// Call the function to generate and download the file
+generateStaticHTML();
+</script>
+</body>
+</html>
