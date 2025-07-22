@@ -26,15 +26,7 @@ const products = [
 ];
 
 function generateStaticHTML() {
-  let html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Static Product Gallery</title>
-</head>
-<body>
-<div class="gallery">
-`;
+  let html =
 
   products.forEach(product => {
     html += `  <div class="item">
@@ -44,18 +36,15 @@ function generateStaticHTML() {
     <button class="snipcart-add-item"
       data-item-id="${product.id}"
       data-item-price="${product.price}"
-	  data-item-url="data-item-url="https://waltket.github.io/SrTortillaStore/"
+	  data-item-url="https://waltket.github.io/SrTortillaStore/"
       data-item-description="${product.description}"
-      data-item-name="${product.name}">
+      data-item-name="${product.name}"
+	  shippable: true >
       Add to Cart
     </button>
   </div>
 `;
-  });
-
-  html += `</div>
-</body>
-</html>`;
+  });;
 
   const blob = new Blob([html], { type: 'text/html' });
   const link = document.createElement('a');
