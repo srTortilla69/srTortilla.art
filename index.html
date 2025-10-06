@@ -700,15 +700,15 @@ function filterProducts(category = '', button = null) {
   renderPage();  // Initial page render
 </script>
 
-	<script>
-	document.addEventListener('snipcart.ready', () => {
-	  Snipcart.events.on('payment.failed', e => {
-		console.error('PAYMENT FAILED (full):', e);
-	  });
-	  Snipcart.events.on('cart.confirm.error', e => {
-		console.error('CONFIRM ERROR (full):', e);
-	  });
-	});
-	</script>
+<script>
+document.addEventListener('snipcart.ready', () => {
+  Snipcart.events.on('payment.failed', e => {
+	console.error('PAYMENT FAILED (full):', e);
+  });
+  Snipcart.events.on('cart.confirm.error', e => {
+	console.error('CONFIRM ERROR (full):', e);
+  });
+});
+</script>
 </body>
 </html>
