@@ -494,6 +494,14 @@
 </script>
 
 <script>
+document.addEventListener('snipcart.ready', () => {
+  Snipcart.events.on('shipping.selected', s => console.log('Shipping selected:', s));
+  Snipcart.events.on('payment.failed', e => console.error('Payment failed:', e));
+  Snipcart.events.on('cart.confirm.error', e => console.error('Confirm error:', e));
+});
+</script>
+
+<script>
  // Static Product Filtering by Category ###MATCH THIS ELEMENTS WITH THE HTML CODE USING THE GENERATEPRODUCTHTML.html###
   let allProducts = [
     { id: 1, category: 'Art', name: 'Cristiano', price: 19.99, image: 'SrTortillaJunio2025/CR7/Cr7CloseUp.jpg', description: 'SIUUU'  },
