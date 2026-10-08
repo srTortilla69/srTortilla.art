@@ -1,137 +1,19 @@
 [
-  {
-    "id": "product-1",
-	"category": "Skyline",
-    "name": "Artwork 1",
-    "description": "Limited edition spray art #1",
-    "price": "60.00",
-    "image": "https://waltket.github.io/SrTortillaStore/DrivinManiaSplashScreen.png",
-    "url": "https://waltket.github.io/SrTortillaStore/"
-  },
-  {
-    "id": "product-2",
-    "name": "Artwork 2",
-    "description": "Limited edition spray art #2",
-	"category": "Urban",
-    "price": "65.00",
-    "image": "https://waltket.github.io/SrTortillaStore/SHrekMusical.jpg",
-    "url": "https://waltket.github.io/SrTortillaStore/"
-  },
-  {
-    "id": "product-3",
-    "name": "Artwork 2",
-	"category": "Urban",
-    "description": "Limited edition spray art #2",
-    "price": "65.00",
-    "image": "https://waltket.github.io/SrTortillaStore/SHrekMusical.jpg",
-    "url": "https://waltket.github.io/SrTortillaStore/"
-  },
-  {
-    "id": "product-4",
-    "name": "Artwork 2",
-	"category": "Portrait",
-    "description": "Limited edition spray art #2",
-    "price": "65.00",
-    "image": "https://waltket.github.io/SrTortillaStore/SHrekMusical.jpg",
-    "url": "https://waltket.github.io/SrTortillaStore/"
-  },
-  {
-    "id": "product-5",
-    "name": "Nature",
-	"category": "Nature",
-    "description": "Limited edition spray art #2",
-    "price": "65.00",
-    "image": "https://waltket.github.io/SrTortillaStore/SHrekMusical.jpg",
-    "url": "https://waltket.github.io/SrTortillaStore/"
-  },
-  {
-    "id": "product-6",
-    "name": "Artwork 2",
-	"category": "Urban",
-    "description": "Limited edition spray art #2",
-    "price": "65.00",
-    "image": "https://waltket.github.io/SrTortillaStore/SHrekMusical.jpg",
-    "url": "https://waltket.github.io/SrTortillaStore/"
-  },
-  {
-    "id": "product-7",
-    "name": "Artwork 2",
-	"category": "Urban",
-    "description": "Limited edition spray art #2",
-    "price": "65.00",
-    "image": "https://waltket.github.io/SrTortillaStore/SHrekMusical.jpg",
-    "url": "https://waltket.github.io/SrTortillaStore/"
-  },
-  {
-    "id": "product-8",
-    "name": "Artwork 2",
-	"category": "Urban",
-    "description": "Limited edition spray art #2",
-    "price": "65.00",
-    "image": "https://waltket.github.io/SrTortillaStore/SHrekMusical.jpg",
-    "url": "https://waltket.github.io/SrTortillaStore/"
-  },
-  {
-    "id": "product-9",
-    "name": "Artwork 2",
-	"category": "Urban",
-    "description": "Limited edition spray art #2",
-    "price": "65.00",
-    "image": "https://waltket.github.io/SrTortillaStore/SHrekMusical.jpg",
-    "url": "https://waltket.github.io/SrTortillaStore/"
-  },
-  {
-    "id": "product-10",
-    "name": "Artwork 2",
-	"category": "Urban",
-    "description": "Limited edition spray art #2",
-    "price": "65.00",
-    "image": "https://waltket.github.io/SrTortillaStore/SHrekMusical.jpg",
-    "url": "https://waltket.github.io/SrTortillaStore/"
-  },
-  {
-    "id": "product-11",
-    "name": "Artwork 2",
-	"category": "Urban",
-    "description": "Limited edition spray art #2",
-    "price": "65.00",
-    "image": "https://waltket.github.io/SrTortillaStore/SHrekMusical.jpg",
-    "url": "https://waltket.github.io/SrTortillaStore/"
-  },
-  {
-    "id": "product-12",
-    "name": "Artwork 2",
-	"category": "Urban",
-    "description": "Limited edition spray art #2",
-    "price": "65.00",
-    "image": "https://waltket.github.io/SrTortillaStore/SHrekMusical.jpg",
-    "url": "https://waltket.github.io/SrTortillaStore/"
-  },
-  {
-    "id": "product-13",
-    "name": "Artwork 2",
-	"category": "Urban",
-    "description": "Limited edition spray art #2",
-    "price": "65.00",
-    "image": "https://waltket.github.io/SrTortillaStore/SHrekMusical.jpg",
-    "url": "https://waltket.github.io/SrTortillaStore/"
-  },
-  {
-    "id": "product-14",
-    "name": "Artwork 2",
-	"category": "Urban",
-    "description": "Limited edition spray art #2",
-    "price": "65.00",
-    "image": "https://waltket.github.io/SrTortillaStore/SHrekMusical.jpg",
-    "url": "https://waltket.github.io/SrTortillaStore/"
-  },
-  {
-    "id": "product-15",
-    "name": "Artwork 2",
-	"category": "Skyline",
-    "description": "Limited edition spray art #2",
-    "price": "65.00",
-    "image": "https://waltket.github.io/SrTortillaStore/SHrekMusical.jpg",
-    "url": "https://waltket.github.io/SrTortillaStore/"
-  }
+  { "id": "1",  "price": 29.99, "url": "https://srtortilla.art/products.json" },
+  { "id": "2",  "price": 29.99, "url": "https://srtortilla.art/products.json" },
+  { "id": "3",  "price": 29.99, "url": "https://srtortilla.art/products.json" },
+  { "id": "4",  "price": 29.99, "url": "https://srtortilla.art/products.json" },
+  { "id": "5",  "price": 29.99, "url": "https://srtortilla.art/products.json" },
+  { "id": "6",  "price": 29.99, "url": "https://srtortilla.art/products.json" },
+  { "id": "7",  "price": 29.99, "url": "https://srtortilla.art/products.json" },
+  { "id": "8",  "price": 29.99, "url": "https://srtortilla.art/products.json" },
+  { "id": "9",  "price": 29.99, "url": "https://srtortilla.art/products.json" },
+  { "id": "10", "price": 29.99, "url": "https://srtortilla.art/products.json" },
+  { "id": "11", "price": 29.99, "url": "https://srtortilla.art/products.json" },
+  { "id": "12", "price": 29.99, "url": "https://srtortilla.art/products.json" },
+  { "id": "13", "price": 29.99, "url": "https://srtortilla.art/products.json" },
+  { "id": "14", "price": 29.99, "url": "https://srtortilla.art/products.json" },
+  { "id": "15", "price": 29.99, "url": "https://srtortilla.art/products.json" },
+  { "id": "16", "price": 29.99, "url": "https://srtortilla.art/products.json" },
+  { "id": "17", "price": 29.99, "url": "https://srtortilla.art/products.json" }
 ]

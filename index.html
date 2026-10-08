@@ -7,6 +7,10 @@
   <link rel="stylesheet" href="https://cdn.snipcart.com/themes/v3.3.0/default/snipcart.css" />
   <script async src="https://cdn.snipcart.com/themes/v3.3.0/default/snipcart.js"></script>
   <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -14,19 +18,33 @@
       color: #fff;
     }
 
-    .logo {
-      max-height: 200px;
-      margin-bottom: 0;
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 2px solid #ff3c38;
+      outline-offset: 2px;
     }
 
     header {
       background-color: #1a1a1a;
       padding: 20px;
       text-align: center;
-      font-size: 2rem;
-      letter-spacing: 2px;
       border-bottom: 2px solid #444;
       position: relative;
+    }
+
+    .logo {
+      display: block;
+      margin: 0 auto;
+      height: 160px;
+      width: auto;
     }
 
     .cart-button {
@@ -40,21 +58,47 @@
       border-radius: 5px;
       cursor: pointer;
       font-weight: bold;
-      text-decoration: none;
     }
 
     .cart-button:hover {
       background: #e52b27;
     }
 
+    #categories-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px 16px 0;
+    }
+
+    .category-button {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: none;
+      background-color: #333;
+      color: white;
+      cursor: pointer;
+    }
+
+    .category-button:hover {
+      background-color: #444;
+    }
+
+    .category-button.active-category {
+      background-color: #ff3c38;
+    }
+
     #search-bar {
-      text-align: center;
-      padding: 20px;
+      padding: 16px;
     }
 
     #search-input {
-      padding: 10px;
-      width: 60%;
+      display: block;
+      margin: 0 auto;
+      padding: 10px 14px;
+      width: 100%;
+      max-width: 500px;
       border-radius: 5px;
       border: none;
       font-size: 1rem;
@@ -64,50 +108,76 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
-      padding: 10px;
-    }
-
-    @media (max-width: 600px) {
-      .gallery {
-        grid-template-columns: repeat(2, 1fr);
-      }
+      padding: 0 16px 16px;
+      max-width: 1200px;
+      margin: 0 auto;
+      scroll-margin-top: 16px;
     }
 
     .item {
       display: flex;
       flex-direction: column;
-      align-items: center;
       background: #222;
-      padding: 15px;
+      padding: 12px;
       border-radius: 10px;
       box-shadow: 0 0 10px #333;
-      position: relative;
-      overflow: visible;
     }
 
-    .item img {
+    .item-image {
+      display: block;
       width: 100%;
-      height: auto;
-      object-fit: cover;
+      padding: 0;
+      border: none;
+      background: #1a1a1a;
       border-radius: 8px;
-      cursor: pointer;
+      overflow: hidden;
+      cursor: zoom-in;
+    }
+
+    .item-image img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      transition: transform 0.2s;
+    }
+
+    .item-image:hover img {
+      transform: scale(1.03);
+    }
+
+    .item_name {
+      margin-top: 10px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .item_price {
+      color: #bbb;
+      text-align: center;
     }
 
     .item .snipcart-add-item {
-      display: inline-block;
       margin-top: 10px;
-      padding: 12px 20px;
+      width: 100%;
+      padding: 12px;
       background-color: #ff3c38;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       font-weight: bold;
-      text-align: center;
     }
 
     .item .snipcart-add-item:hover {
       background-color: #e52b27;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: #bbb;
+      padding: 40px 0;
     }
 
     .pagination {
@@ -129,159 +199,231 @@
       background-color: #ff3c38;
     }
 
-    .category-button {
-      margin: 5px;
-      padding: 8px 12px;
-      border-radius: 5px;
+    /* Product viewer: everything fits in one screen, nothing scrolls */
+    #modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      flex-direction: column;
+      gap: 12px;
+      height: 100vh;
+      height: 100dvh;
+      padding: 64px 16px 16px;
+      background-color: rgba(0, 0, 0, 0.92);
+    }
+
+    #modal.open {
+      display: flex;
+    }
+
+    .modal-stage {
+      flex: 1 1 auto;
+      min-height: 0;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #modal-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+      user-select: none;
+      transition: opacity 0.2s;
+    }
+
+    #modal-img.loading {
+      opacity: 0;
+    }
+
+    .icon-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      padding: 0;
       border: none;
-      background-color: #333;
+      border-radius: 50%;
+      background-color: rgba(40, 40, 40, 0.85);
       color: white;
       cursor: pointer;
     }
 
-    .category-button.active-category {
+    .icon-button:hover {
       background-color: #ff3c38;
     }
 
-    #modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: rgba(0, 0, 0, 0.8);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      overflow: hidden;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-    #modal .modal-content {
-      position: relative;
-      max-width: 90%;
-      max-height: 80%;
-      background-color: black;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-      overflow-y: auto;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    #modal-img {
-      max-width: 90vw;
-      max-height: 70vh;
-      width: auto;
-      height: auto;
-      object-fit: contain;
-      border-radius: 10px;
-      display: block;
-      margin: 0 auto;
-    }
-
-    #modal-description {
-      color: white;
-      margin-bottom: 20px;
-      font-size: 1.2rem;
+    .icon-button svg {
+      width: 22px;
+      height: 22px;
     }
 
     #modal-close {
       position: absolute;
-      top: 10px;
-      right: 10px;
-      font-size: 30px;
-      color: white;
-      background-color: transparent;
-      border: none;
-      cursor: pointer;
-      z-index: 1010;
+      top: 12px;
+      right: 12px;
     }
 
-    .modal-nav {
-      display: flex;
-      justify-content: space-between;
+    .modal-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .modal-arrow.prev {
+      left: 0;
+    }
+
+    .modal-arrow.next {
+      right: 0;
+    }
+
+    .modal-info {
+      flex: none;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 4px 16px;
       width: 100%;
+      max-width: 640px;
+      margin: 0 auto;
     }
 
-    #prev-slide, #next-slide {
-      background-color: #ff3c38;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
+    #modal-name {
+      margin: 0;
+      font-size: 1.3rem;
     }
 
-    #prev-slide:hover, #next-slide:hover {
-      background-color: #e52b27;
+    #modal-description {
+      margin: 0;
+      color: #bbb;
     }
 
-    .modal-content .snipcart-add-item {
-      margin: 20px auto;
+    .modal-meta {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      text-align: right;
+    }
+
+    #modal-price {
       display: block;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
+    #modal-index {
+      color: #888;
+      font-size: 0.85rem;
+    }
+
+    #modal-buy {
+      grid-column: 1 / -1;
+      margin-top: 8px;
+      padding: 12px;
       background-color: #ff3c38;
       color: white;
-      padding: 10px 20px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       font-weight: bold;
+      font-size: 1rem;
     }
 
     #modal-buy:hover {
-      background: #e52b27;
+      background-color: #e52b27;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 12px;
+      }
+
+      .logo {
+        height: 110px;
+      }
+
+      .cart-button {
+        top: 12px;
+        right: 12px;
+        padding: 6px 10px;
+        font-size: 0.85rem;
+      }
+
+      .gallery {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        padding: 0 12px 12px;
+      }
+
+      .item {
+        padding: 8px;
+      }
+
+      #modal {
+        padding: 64px 12px 12px;
+      }
+
+      #modal-name,
+      #modal-price {
+        font-size: 1.1rem;
+      }
     }
   </style>
 </head>
 <body>
 
 <header>
-  <img src="srTortillaLogo.jpg" alt="SrTortilla Logo" class="logo">
+  <img src="srTortillaLogo.jpg" alt="SrTortilla" class="logo">
   <button class="snipcart-checkout cart-button">
     View Cart <span class="snipcart-items-count"></span>
   </button>
 </header>
 
 <!-- Category Filter -->
-<div id="categories-bar" style="text-align:center; padding: 15px;">
-  <span id="category-buttons">
-    <button class="category-button" onclick="handleCategoryClick('Sports', this)">Sports</button>
-    <button class="category-button" onclick="handleCategoryClick('Movies', this)">Movies</button>
-    <button class="category-button" onclick="handleCategoryClick('Comics', this)">Comics</button>
-    <button class="category-button" onclick="handleCategoryClick('Anime', this)">Anime</button>
-    <button class="category-button" onclick="handleCategoryClick('Cartoons', this)">Cartoons</button>
-    <button class="category-button" onclick="handleCategoryClick('Videogames', this)">Videogames</button>
-  </span>
-</div>
+<nav id="categories-bar" aria-label="Categories">
+  <button class="category-button active-category" onclick="handleCategoryClick('', this)">All</button>
+  <button class="category-button" onclick="handleCategoryClick('Sports', this)">Sports</button>
+  <button class="category-button" onclick="handleCategoryClick('Movies', this)">Movies</button>
+  <button class="category-button" onclick="handleCategoryClick('Comics', this)">Comics</button>
+  <button class="category-button" onclick="handleCategoryClick('Anime', this)">Anime</button>
+  <button class="category-button" onclick="handleCategoryClick('Cartoons', this)">Cartoons</button>
+  <button class="category-button" onclick="handleCategoryClick('Videogames', this)">Videogames</button>
+</nav>
 
 <!-- Search Bar -->
 <div id="search-bar">
-  <input type="text" id="search-input" placeholder="Search for artwork by name..." oninput="filterProducts(activeCategory)">
+  <input type="search" id="search-input" placeholder="Search for artwork by name..." aria-label="Search artwork" oninput="filterProducts(activeCategory)">
 </div>
 
 <!-- Gallery -->
 <section class="gallery" id="gallery"></section>
 
-<!-- Modal for Slideshow -->
-<div id="modal">
-  <div class="modal-content">
-    <img id="modal-img" src="" alt="Product Image">
-    <span id="modal-description"></span>
-    <span id="modal-index" style="color:white; text-align:center; display:block; margin-top:5px;"></span>
-    <button id="modal-close" onclick="closeModal()">Close</button>
-    <button id="modal-buy" class="snipcart-add-item" style="margin-top:10px;">Add to Cart</button>
-    <div class="modal-nav">
-      <button id="prev-slide" onclick="prevSlide()">Previous</button>
-      <button id="next-slide" onclick="nextSlide()">Next</button>
+<!-- Product viewer -->
+<div id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-name" onclick="if (event.target === this || event.target.classList.contains('modal-stage')) closeModal()">
+  <button id="modal-close" class="icon-button" onclick="closeModal()" aria-label="Close">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <div class="modal-stage">
+    <img id="modal-img" src="" alt="" onload="this.classList.remove('loading')">
+    <button class="icon-button modal-arrow prev" onclick="prevSlide()" aria-label="Previous artwork">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <button class="icon-button modal-arrow next" onclick="nextSlide()" aria-label="Next artwork">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+  <div class="modal-info">
+    <h2 id="modal-name"></h2>
+    <p id="modal-description"></p>
+    <div class="modal-meta">
+      <span id="modal-price"></span>
+      <span id="modal-index"></span>
     </div>
+    <button id="modal-buy" class="snipcart-add-item">Add to Cart</button>
   </div>
 </div>
 
@@ -302,6 +444,9 @@ document.addEventListener('snipcart.ready', () => {
 
 <script>
 const SITE_URL = 'https://srtortilla.art/';
+// Snipcart validates prices against this file at checkout.
+// When you add a product or change a price here, update products.json too.
+const PRODUCTS_URL = SITE_URL + 'products.json';
 
 let allProducts = [
   { id: 1,  category: 'Sports',     name: 'Kobe',                    price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0050.jpg', description: 'Mamba mentality' },
@@ -333,6 +478,10 @@ function renderPage() {
   const gallery = document.getElementById('gallery');
   gallery.innerHTML = '';
 
+  if (filteredProducts.length === 0) {
+    gallery.innerHTML = '<p class="empty-state">No artwork matches your search.</p>';
+  }
+
   const start = (currentPage - 1) * itemsPerPage;
   const paginatedProducts = filteredProducts.slice(start, start + itemsPerPage);
 
@@ -340,14 +489,17 @@ function renderPage() {
     const div = document.createElement('div');
     div.className = 'item';
     div.innerHTML = `
-      <img src="${product.image}" alt="${product.name}" onclick="openModal(${start + index})">
+      <button class="item-image" onclick="openModal(${start + index})" aria-label="View ${product.name}">
+        <img src="${product.image}" alt="${product.name}" loading="lazy">
+      </button>
       <span class="item_name">${product.name}</span>
       <span class="item_price">$${product.price}</span>
       <button class="snipcart-add-item"
         data-item-id="${product.id}"
         data-item-price="${product.price}"
-        data-item-url="${SITE_URL}"
+        data-item-url="${PRODUCTS_URL}"
         data-item-description="${product.description}"
+        data-item-image="${SITE_URL}${product.image}"
         data-item-name="${product.name}">
         Add to Cart
       </button>
@@ -363,11 +515,7 @@ function renderPagination() {
   pagination.innerHTML = '';
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-
-  if (totalPages === 0) {
-    pagination.innerHTML = 'No products available';
-    return;
-  }
+  if (totalPages <= 1) return;
 
   for (let i = 1; i <= totalPages; i++) {
     const button = document.createElement('button');
@@ -382,31 +530,52 @@ function goToPage(page) {
   if (page < 1 || page > Math.ceil(filteredProducts.length / itemsPerPage)) return;
   currentPage = page;
   renderPage();
+  document.getElementById('gallery').scrollIntoView({ behavior: 'smooth' });
 }
 
 function openModal(index) {
   currentIndex = index;
-  document.getElementById('modal').style.display = 'flex';
   updateModalContent();
+  document.getElementById('modal').classList.add('open');
+  document.body.classList.add('modal-open');
+  document.getElementById('modal-close').focus();
 }
 
 function closeModal() {
-  document.getElementById('modal').style.display = 'none';
+  document.getElementById('modal').classList.remove('open');
+  document.body.classList.remove('modal-open');
 }
 
 function updateModalContent() {
   const product = filteredProducts[currentIndex];
 
-  document.getElementById('modal-img').src = product.image;
-  document.getElementById('modal-description').textContent = product.description || 'No description';
-  document.getElementById('modal-index').textContent = `Artwork ${currentIndex + 1} of ${filteredProducts.length}`;
+  const img = document.getElementById('modal-img');
+  if (!img.src.endsWith(product.image)) {
+    img.classList.add('loading');
+    img.src = product.image;
+  }
+  img.alt = product.name;
+
+  // Preload neighbours so Previous/Next feel instant
+  [currentIndex - 1, currentIndex + 1].forEach(i => {
+    const p = filteredProducts[(i + filteredProducts.length) % filteredProducts.length];
+    if (p) new Image().src = p.image;
+  });
+  document.getElementById('modal-name').textContent = product.name;
+  document.getElementById('modal-description').textContent = product.description || '';
+  document.getElementById('modal-price').textContent = `$${product.price}`;
+  document.getElementById('modal-index').textContent = `${currentIndex + 1} of ${filteredProducts.length}`;
+
+  const single = filteredProducts.length < 2;
+  document.querySelectorAll('.modal-arrow').forEach(btn => btn.hidden = single);
 
   const buyBtn = document.getElementById('modal-buy');
   buyBtn.setAttribute('data-item-id', product.id);
   buyBtn.setAttribute('data-item-name', product.name);
   buyBtn.setAttribute('data-item-price', product.price);
-  buyBtn.setAttribute('data-item-url', SITE_URL);
+  buyBtn.setAttribute('data-item-url', PRODUCTS_URL);
   buyBtn.setAttribute('data-item-description', product.description);
+  buyBtn.setAttribute('data-item-image', SITE_URL + product.image);
 }
 
 function prevSlide() {
@@ -421,15 +590,25 @@ function nextSlide() {
   updateModalContent();
 }
 
-document.getElementById('modal-buy').addEventListener('click', function(e) {
-  Snipcart.api.cart.items.add({
-    id: e.target.getAttribute('data-item-id'),
-    name: e.target.getAttribute('data-item-name'),
-    price: parseFloat(e.target.getAttribute('data-item-price')),
-    url: e.target.getAttribute('data-item-url'),
-    description: e.target.getAttribute('data-item-description')
-  });
-  closeModal();
+// Snipcart adds the item itself because the button has the snipcart-add-item class,
+// so here we only close the viewer to reveal the cart.
+document.getElementById('modal-buy').addEventListener('click', closeModal);
+
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('modal').classList.contains('open')) return;
+  if (e.key === 'Escape') closeModal();
+  else if (e.key === 'ArrowLeft') prevSlide();
+  else if (e.key === 'ArrowRight') nextSlide();
+});
+
+let touchStartX = null;
+const modalStage = document.querySelector('.modal-stage');
+modalStage.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+modalStage.addEventListener('touchend', e => {
+  if (touchStartX === null) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 50) dx > 0 ? prevSlide() : nextSlide();
+  touchStartX = null;
 });
 
 function filterProducts(category = '') {
@@ -446,15 +625,14 @@ function filterProducts(category = '') {
 }
 
 function handleCategoryClick(category, button) {
-  if (activeCategory === category) {
-    activeCategory = '';
-    button.classList.remove('active-category');
-  } else {
-    activeCategory = category;
-    document.querySelectorAll('.category-button').forEach(btn => btn.classList.remove('active-category'));
-    button.classList.add('active-category');
+  // Clicking the active category again goes back to All
+  if (category !== '' && activeCategory === category) {
+    category = '';
+    button = document.querySelector('.category-button');
   }
-  filterProducts(activeCategory);
+  document.querySelectorAll('.category-button').forEach(btn => btn.classList.remove('active-category'));
+  button.classList.add('active-category');
+  filterProducts(category);
 }
 
 renderPage();
