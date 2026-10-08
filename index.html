@@ -138,7 +138,7 @@
       display: block;
       width: 100%;
       aspect-ratio: 3 / 4;
-      object-fit: cover;
+      object-fit: contain;
       transition: transform 0.2s;
     }
 
@@ -171,6 +171,35 @@
 
     .item .snipcart-add-item:hover {
       background-color: #e52b27;
+    }
+
+    .stock {
+      margin-top: 4px;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #ffb547;
+    }
+
+    .stock.sold-out {
+      color: #888;
+    }
+
+    .item.sold-out img {
+      opacity: 0.45;
+    }
+
+    .sold-out-button,
+    .sold-out-button:hover {
+      margin-top: 10px;
+      width: 100%;
+      padding: 12px;
+      background-color: #444 !important;
+      color: #aaa;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: not-allowed;
     }
 
     .empty-state {
@@ -337,6 +366,21 @@
       background-color: #e52b27;
     }
 
+    #modal-buy:disabled {
+      background-color: #444;
+      color: #aaa;
+      cursor: not-allowed;
+    }
+
+    #modal-stock {
+      grid-column: 1 / -1;
+      margin-top: 4px;
+    }
+
+    #modal-stock:empty {
+      display: none;
+    }
+
     @media (max-width: 600px) {
       header {
         padding: 12px;
@@ -386,6 +430,7 @@
 <!-- Category Filter -->
 <nav id="categories-bar" aria-label="Categories">
   <button class="category-button active-category" onclick="handleCategoryClick('', this)">All</button>
+  <button class="category-button" onclick="handleCategoryClick('Live', this)">Live</button>
   <button class="category-button" onclick="handleCategoryClick('Sports', this)">Sports</button>
   <button class="category-button" onclick="handleCategoryClick('Movies', this)">Movies</button>
   <button class="category-button" onclick="handleCategoryClick('Comics', this)">Comics</button>
@@ -423,6 +468,7 @@
       <span id="modal-price"></span>
       <span id="modal-index"></span>
     </div>
+    <span id="modal-stock" class="stock"></span>
     <button id="modal-buy" class="snipcart-add-item">Add to Cart</button>
   </div>
 </div>
@@ -445,8 +491,12 @@ document.addEventListener('snipcart.ready', () => {
 <script>
 const SITE_URL = 'https://srtortilla.art/';
 // Snipcart validates prices against this file at checkout.
-// When you add a product or change a price here, update products.json too.
+// When you add a product or change a price or name here, update products.json too.
 const PRODUCTS_URL = SITE_URL + 'products.json';
+
+// Live stock counter (see stock-worker/README.md). Leave empty until the Worker is set up;
+// until then the site shows the `stock` numbers written below.
+const STOCK_API_URL = '';
 
 let allProducts = [
   { id: 1,  category: 'Sports',     name: 'Kobe',                    price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0050.jpg', description: 'Mamba mentality' },
@@ -466,7 +516,57 @@ let allProducts = [
   { id: 15, category: 'Movies',     name: 'Darth Vader',             price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0069.jpg', description: 'The dark side' },
   { id: 16, category: 'Movies',     name: 'Jack Skellington',        price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0071.jpg', description: 'Pumpkin King' },
   { id: 17, category: ['Videogames', 'Anime'], name: 'Pikachu',                 price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0072.jpg', description: 'Pika pika' },
+
+  // Live paintings: limited copies. `stock` = how many copies you have.
+  // Enter the same number as "Stock on hand" in the Snipcart dashboard; Snipcart counts it down with each sale.
+  // PLACEHOLDER price and stock - change them to the real values.
+  { id: 18, category: 'Live', stock: 1, name: 'Cosmic Vegas',          price: 29.99, image: 'LivePaintings100726/web/live-01.jpg', description: 'The Strip under a sky of planets' },
+  { id: 19, category: 'Live', stock: 1, name: 'Air Support',           price: 29.99, image: 'LivePaintings100726/web/live-02.jpg', description: 'Over the stars and stripes' },
+  { id: 20, category: 'Live', stock: 1, name: 'Impact',                price: 29.99, image: 'LivePaintings100726/web/live-03.jpg', description: 'A world on fire' },
+  { id: 21, category: 'Live', stock: 1, name: 'Las Vegas 69 mi',       price: 29.99, image: 'LivePaintings100726/web/live-04.jpg', description: 'Howling at a pink planet' },
+  { id: 22, category: 'Live', stock: 1, name: 'Stars & Stripes Vegas', price: 29.99, image: 'LivePaintings100726/web/live-05.jpg', description: 'The Strip under Old Glory' },
+  { id: 23, category: 'Live', stock: 1, name: 'Golden Vegas',          price: 29.99, image: 'LivePaintings100726/web/live-06.jpg', description: 'The Strip in gold' },
+  { id: 24, category: 'Live', stock: 1, name: 'LA Nights',             price: 29.99, image: 'LivePaintings100726/web/live-07.jpg', description: 'Rams over the LA skyline' },
 ];
+
+// Only products with a `stock` number are limited; everything else can always be bought.
+function isLimited(product) {
+  return typeof product.stock === 'number';
+}
+
+function stockText(product) {
+  if (!isLimited(product)) return '';
+  if (product.stock <= 0) return 'Sold out';
+  return product.stock === 1 ? '1 copy left' : `${product.stock} copies left`;
+}
+
+function cartButtonAttributes(product) {
+  return `
+        data-item-id="${product.id}"
+        data-item-price="${product.price}"
+        data-item-url="${PRODUCTS_URL}"
+        data-item-description="${product.description}"
+        data-item-image="${SITE_URL}${product.image}"
+        data-item-name="${product.name}"
+        ${isLimited(product) ? `data-item-max-quantity="${product.stock}"` : ''}`;
+}
+
+async function refreshStock() {
+  const limited = allProducts.filter(isLimited);
+  if (!STOCK_API_URL || limited.length === 0) return;
+  try {
+    const res = await fetch(`${STOCK_API_URL}?ids=${limited.map(p => p.id).join(',')}`, { cache: 'no-store' });
+    if (!res.ok) return;
+    const counts = await res.json();
+    limited.forEach(p => {
+      if (typeof counts[p.id] === 'number') p.stock = counts[p.id];
+    });
+    renderPage();
+    if (document.getElementById('modal').classList.contains('open')) updateModalContent();
+  } catch {
+    // Counter unreachable: keep showing the numbers written above
+  }
+}
 
 let currentPage = 1;
 const itemsPerPage = 12;
@@ -486,23 +586,21 @@ function renderPage() {
   const paginatedProducts = filteredProducts.slice(start, start + itemsPerPage);
 
   paginatedProducts.forEach((product, index) => {
+    const soldOut = isLimited(product) && product.stock <= 0;
     const div = document.createElement('div');
-    div.className = 'item';
+    div.className = soldOut ? 'item sold-out' : 'item';
     div.innerHTML = `
       <button class="item-image" onclick="openModal(${start + index})" aria-label="View ${product.name}">
         <img src="${product.image}" alt="${product.name}" loading="lazy">
       </button>
       <span class="item_name">${product.name}</span>
       <span class="item_price">$${product.price}</span>
-      <button class="snipcart-add-item"
-        data-item-id="${product.id}"
-        data-item-price="${product.price}"
-        data-item-url="${PRODUCTS_URL}"
-        data-item-description="${product.description}"
-        data-item-image="${SITE_URL}${product.image}"
-        data-item-name="${product.name}">
+      ${isLimited(product) ? `<span class="stock${soldOut ? ' sold-out' : ''}">${stockText(product)}</span>` : ''}
+      ${soldOut
+        ? '<button class="sold-out-button" disabled>Sold Out</button>'
+        : `<button class="snipcart-add-item" ${cartButtonAttributes(product)}>
         Add to Cart
-      </button>
+      </button>`}
     `;
     gallery.appendChild(div);
   });
@@ -569,7 +667,18 @@ function updateModalContent() {
   const single = filteredProducts.length < 2;
   document.querySelectorAll('.modal-arrow').forEach(btn => btn.hidden = single);
 
+  const soldOut = isLimited(product) && product.stock <= 0;
+  const stockEl = document.getElementById('modal-stock');
+  stockEl.textContent = stockText(product);
+  stockEl.classList.toggle('sold-out', soldOut);
+
   const buyBtn = document.getElementById('modal-buy');
+  // Without the snipcart-add-item class Snipcart ignores the button, so sold-out pieces can't be added
+  buyBtn.classList.toggle('snipcart-add-item', !soldOut);
+  buyBtn.disabled = soldOut;
+  buyBtn.textContent = soldOut ? 'Sold Out' : 'Add to Cart';
+  if (isLimited(product)) buyBtn.setAttribute('data-item-max-quantity', product.stock);
+  else buyBtn.removeAttribute('data-item-max-quantity');
   buyBtn.setAttribute('data-item-id', product.id);
   buyBtn.setAttribute('data-item-name', product.name);
   buyBtn.setAttribute('data-item-price', product.price);
@@ -636,6 +745,12 @@ function handleCategoryClick(category, button) {
 }
 
 renderPage();
+refreshStock();
+
+// After an order, fetch the new counts (the counter caches results for 30 seconds)
+document.addEventListener('snipcart.ready', () => {
+  Snipcart.events.on('cart.confirmed', () => setTimeout(refreshStock, 35000));
+});
 </script>
 
 </body>
