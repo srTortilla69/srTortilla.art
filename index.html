@@ -253,9 +253,12 @@
 <!-- Category Filter -->
 <div id="categories-bar" style="text-align:center; padding: 15px;">
   <span id="category-buttons">
-    <button class="category-button" onclick="handleCategoryClick('Art', this)">Art</button>
-    <button class="category-button" onclick="handleCategoryClick('Sculptures', this)">Sculptures</button>
-    <button class="category-button" onclick="handleCategoryClick('Paintings', this)">Paintings</button>
+    <button class="category-button" onclick="handleCategoryClick('Sports', this)">Sports</button>
+    <button class="category-button" onclick="handleCategoryClick('Movies', this)">Movies</button>
+    <button class="category-button" onclick="handleCategoryClick('Comics', this)">Comics</button>
+    <button class="category-button" onclick="handleCategoryClick('Anime', this)">Anime</button>
+    <button class="category-button" onclick="handleCategoryClick('Cartoons', this)">Cartoons</button>
+    <button class="category-button" onclick="handleCategoryClick('Videogames', this)">Videogames</button>
   </span>
 </div>
 
@@ -301,10 +304,23 @@ document.addEventListener('snipcart.ready', () => {
 const SITE_URL = 'https://srtortilla.art/';
 
 let allProducts = [
-  { id: 1, category: 'Art', name: 'Jay',           price: 29.99, image: 'Halloween2025/Json/Json.jpeg',                 description: 'Crazy friday nights' },
-  { id: 2, category: 'Art', name: 'Dancing Clown', price: 29.99, image: 'Halloween2025/DancingClown/DancingClown.jpeg', description: '#floating' },
-  { id: 3, category: 'Art', name: 'Chuck',         price: 29.99, image: 'Halloween2025/Chuck/Chuck.jpeg',               description: 'Cursed doll' },
-  { id: 4, category: 'Art', name: 'Smiles',        price: 29.99, image: 'Halloween2025/Smiles/Smiles.jpeg',             description: 'Bloody Clown' },
+  { id: 1,  category: 'Sports',     name: 'Kobe',                    price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0050.jpg', description: 'Mamba mentality' },
+  { id: 2,  category: 'Sports',     name: 'CR7',                     price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0051.jpg', description: 'Siuuu' },
+  { id: 3,  category: 'Comics',     name: 'Iron Man',                price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0054.jpg', description: 'Repulsor ready' },
+  { id: 4,  category: 'Sports',     name: 'Messi',                   price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0055.jpg', description: 'Albiceleste #10' },
+  { id: 5,  category: 'Movies',     name: 'R2-D2',                   price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0057.jpg', description: 'Dripping droid' },
+  { id: 6,  category: 'Anime',      name: 'Goku',                    price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0058.jpg', description: 'Super Saiyan' },
+  { id: 7,  category: 'Comics',     name: 'Joker',                   price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0059.jpg', description: 'Put on a happy face' },
+  { id: 8,  category: 'Comics',     name: 'Harley Quinn',            price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0061.jpg', description: 'Queen of hearts' },
+  { id: 9,  category: 'Movies',     name: 'Stitch',                  price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0062.jpg', description: 'Experiment 626' },
+  { id: 10, category: 'Anime',      name: 'Naruto',                  price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0063.jpg', description: 'Believe it' },
+  { id: 11, category: ['Cartoons', 'Anime'], name: 'Hello Kitty',             price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0064.jpg', description: 'Flower power' },
+  { id: 12, category: 'Anime',      name: 'Luffy',                   price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0065.jpg', description: 'Straw hat captain' },
+  { id: 13, category: 'Comics',     name: 'Venom',                   price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0067.jpg', description: 'We are Venom' },
+  { id: 14, category: 'Comics',     name: 'Spider-Man vs Symbiotes', price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0068.jpg', description: 'Carnage and Venom' },
+  { id: 15, category: 'Movies',     name: 'Darth Vader',             price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0069.jpg', description: 'The dark side' },
+  { id: 16, category: 'Movies',     name: 'Jack Skellington',        price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0071.jpg', description: 'Pumpkin King' },
+  { id: 17, category: ['Videogames', 'Anime'], name: 'Pikachu',                 price: 29.99, image: 'dlosimages10072026/IMG-20261007-WA0072.jpg', description: 'Pika pika' },
 ];
 
 let currentPage = 1;
@@ -422,7 +438,7 @@ function filterProducts(category = '') {
 
   filteredProducts = allProducts.filter(product =>
     product.name.toLowerCase().includes(searchTerm) &&
-    (activeCategory === '' || product.category === activeCategory)
+    (activeCategory === '' || [].concat(product.category).includes(activeCategory))
   );
 
   currentPage = 1;
