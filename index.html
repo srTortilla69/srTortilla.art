@@ -47,6 +47,14 @@
       width: auto;
     }
 
+    .disclaimer {
+      max-width: 640px;
+      margin: 12px auto 0;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #bbb;
+    }
+
     .cart-button {
       position: absolute;
       top: 20px;
@@ -422,6 +430,9 @@
 
 <header>
   <img src="srTortillaLogo.jpg" alt="SrTortilla" class="logo">
+  <p class="disclaimer">
+    Every painting is a one-of-a-kind handcrafted creation. Colors, details, textures, and composition may vary slightly from the product images shown.
+  </p>
   <button class="snipcart-checkout cart-button">
     View Cart <span class="snipcart-items-count"></span>
   </button>
@@ -540,7 +551,7 @@ allProducts.sort((a, b) => isLimited(b) - isLimited(a));
 function stockText(product) {
   if (!isLimited(product)) return '';
   if (product.stock <= 0) return 'Sold out';
-  return product.stock === 1 ? '1 copy left' : `${product.stock} copies left`;
+  return product.stock === 1 ? '1 painting left' : `${product.stock} paintings left`;
 }
 
 function cartButtonAttributes(product) {
