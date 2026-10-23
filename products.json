@@ -16,11 +16,11 @@
   {"id":"15","name":"Darth Vader","price":29.99,"description":"The dark side","image":"https://srtortilla.art/dlosimages10072026/IMG-20261007-WA0069.jpg","url":"https://srtortilla.art/products.json"},
   {"id":"16","name":"Jack Skellington","price":29.99,"description":"Pumpkin King","image":"https://srtortilla.art/dlosimages10072026/IMG-20261007-WA0071.jpg","url":"https://srtortilla.art/products.json"},
   {"id":"17","name":"Pikachu","price":29.99,"description":"Pika pika","image":"https://srtortilla.art/dlosimages10072026/IMG-20261007-WA0072.jpg","url":"https://srtortilla.art/products.json"},
-  {"id":"18","name":"Cosmic Vegas","price":29.99,"description":"The Strip under a sky of planets","image":"https://srtortilla.art/LivePaintings100726/web/live-01.jpg","url":"https://srtortilla.art/products.json"},
-  {"id":"19","name":"Air Support","price":29.99,"description":"Over the stars and stripes","image":"https://srtortilla.art/LivePaintings100726/web/live-02.jpg","url":"https://srtortilla.art/products.json"},
-  {"id":"20","name":"Impact","price":29.99,"description":"A world on fire","image":"https://srtortilla.art/LivePaintings100726/web/live-03.jpg","url":"https://srtortilla.art/products.json"},
-  {"id":"21","name":"Las Vegas 69 mi","price":29.99,"description":"Howling at a pink planet","image":"https://srtortilla.art/LivePaintings100726/web/live-04.jpg","url":"https://srtortilla.art/products.json"},
-  {"id":"22","name":"Stars & Stripes Vegas","price":29.99,"description":"The Strip under Old Glory","image":"https://srtortilla.art/LivePaintings100726/web/live-05.jpg","url":"https://srtortilla.art/products.json"},
-  {"id":"23","name":"Golden Vegas","price":29.99,"description":"The Strip in gold","image":"https://srtortilla.art/LivePaintings100726/web/live-06.jpg","url":"https://srtortilla.art/products.json"},
-  {"id":"24","name":"LA Nights","price":29.99,"description":"Rams over the LA skyline","image":"https://srtortilla.art/LivePaintings100726/web/live-07.jpg","url":"https://srtortilla.art/products.json"}
+  {"id":"18","name":"Cosmic Vegas","price":39.99,"description":"The Strip under a sky of planets","image":"https://srtortilla.art/LivePaintings100726/web/live-01.jpg","url":"https://srtortilla.art/products.json"},
+  {"id":"19","name":"Air Support","price":39.99,"description":"Over the stars and stripes","image":"https://srtortilla.art/LivePaintings100726/web/live-02.jpg","url":"https://srtortilla.art/products.json"},
+  {"id":"20","name":"Impact","price":39.99,"description":"A world on fire","image":"https://srtortilla.art/LivePaintings100726/web/live-03.jpg","url":"https://srtortilla.art/products.json"},
+  {"id":"21","name":"Las Vegas 69 mi","price":39.99,"description":"Howling at a pink planet","image":"https://srtortilla.art/LivePaintings100726/web/live-04.jpg","url":"https://srtortilla.art/products.json"},
+  {"id":"22","name":"Stars & Stripes Vegas","price":39.99,"description":"The Strip under Old Glory","image":"https://srtortilla.art/LivePaintings100726/web/live-05.jpg","url":"https://srtortilla.art/products.json"},
+  {"id":"23","name":"Golden Vegas","price":39.99,"description":"The Strip in gold","image":"https://srtortilla.art/LivePaintings100726/web/live-06.jpg","url":"https://srtortilla.art/products.json"},
+  {"id":"24","name":"LA Nights","price":39.99,"description":"Rams over the LA skyline","image":"https://srtortilla.art/LivePaintings100726/web/live-07.jpg","url":"https://srtortilla.art/products.json"}
 ]
